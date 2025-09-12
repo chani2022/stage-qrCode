@@ -18,8 +18,6 @@ security:
         main:
             lazy: true
             provider: models
-            json_login:
-                check_path: /api/login
             custom_authenticators:
                 - App\Security\JsonAuthenticator
 
