@@ -8,8 +8,8 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
-        models:
-            id: App\Models\User
+        user_provider:
+            id: App\Provider\UserProvider
 
     firewalls:
         dev:
@@ -17,7 +17,7 @@ security:
             security: false
         main:
             lazy: true
-            provider: models
+            provider: user_provider
             custom_authenticators:
                 - App\Security\JsonAuthenticator
 

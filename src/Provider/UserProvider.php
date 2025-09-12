@@ -21,7 +21,10 @@ class UserProvider implements UserProviderInterface
     {
         $user = new User($this->connection);
 
-        return $user->findByIdentifier($identifier);
+        $dataUser = $user->findByIdentifier($identifier);
+        $user->setProperties($dataUser);
+
+        return $user;
     }
 
     public function refreshUser(UserInterface $user): UserInterface

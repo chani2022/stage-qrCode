@@ -9,12 +9,51 @@ class User extends AbstractQueryBuilder implements UserInterface
 {
     const TABLENAME = 'personnel';
 
+    private int $id;
+    private ?string $nom;
+    private ?string $prenom;
     private array $roles = [];
     private string $identifier;
 
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function setPrenom(?string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
     }
 
     public function getRoles(): array
@@ -32,16 +71,18 @@ class User extends AbstractQueryBuilder implements UserInterface
 
     public function eraseCredentials(): void {}
 
-    public function findByIdentifier(string $identifier): ?User
+    public function findByIdentifier(string $identifier): ?array
     {
-        $qb = $this->getQueryBuilder()
+        return $this->getQueryBuilder()
+            ->select(['id_personnel', 'nom', 'prenom'])
             ->from(self::TABLENAME, self::TABLENAME)
-            ->where(self::TABLENAME . '.matricule = :identifier')
+            ->where(self::TABLENAME . '.id_personnel = :identifier')
             ->setParameter('identifier', $identifier)
             ->executeQuery()
-            ->fetchOne();
+            ->fetchAssociative()
+        ;
 
-        return $qb->executeQuery()->fetchOne();
+        // return $qb->executeQuery()->fetchOne();
     }
 
     public function findUser(array $criteria): ?User
@@ -55,5 +96,15 @@ class User extends AbstractQueryBuilder implements UserInterface
         }
 
         return $qb->executeQuery()->fetchOne();
+    }
+
+    public function setProperties(array $properties): void
+    {
+        foreach ($properties as $propertie => $value) {
+            $setter = 'set' . ucfirst($propertie);
+            if (method_exists($this, $setter)) {
+                $this->$setter($value);
+            }
+        }
     }
 }
