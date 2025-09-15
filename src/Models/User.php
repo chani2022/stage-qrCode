@@ -2,25 +2,31 @@
 
 namespace App\Models;
 
-use Doctrine\DBAL\Connection;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class User extends AbstractQueryBuilder implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    const TABLENAME = 'personnel';
 
-    private int $id;
+    private ?int $id;
     private ?string $nom;
     private ?string $prenom;
     private array $roles = [];
-    private string $identifier;
+    private ?string $identifier;
+    private ?string $password = null;
+    private ?string $login = null;
 
-    public function __construct(Connection $connection)
+    public function __construct(int $id, string $nom, string $prenom, string $roles, string $login)
     {
-        parent::__construct($connection);
+        $this->id = $id;
+        $this->identifier = $id;
+        $this->nom = $nom;
+        $this->prenom = $prenom;
+        $this->login = $login;
+        $this->setRoles($roles);
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -35,7 +41,24 @@ class User extends AbstractQueryBuilder implements UserInterface
         return $this->prenom;
     }
 
-    public function setId(int $id): static
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): static
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function setId(?int $id): static
     {
         $this->id = $id;
 
@@ -56,6 +79,28 @@ class User extends AbstractQueryBuilder implements UserInterface
         return $this;
     }
 
+    public function setPassword(?string $password): static
+    {
+
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function setIdentifier(?string $identifier): static
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
+
+    public function setRoles(string $roles): static
+    {
+        $this->roles = $this->assignRoles($roles);
+
+        return $this;
+    }
+
     public function getRoles(): array
     {
         if (count($this->roles) == 0) {
@@ -71,40 +116,12 @@ class User extends AbstractQueryBuilder implements UserInterface
 
     public function eraseCredentials(): void {}
 
-    public function findByIdentifier(string $identifier): ?array
+    private function assignRoles(string $roles): array
     {
-        return $this->getQueryBuilder()
-            ->select(['id_personnel', 'nom', 'prenom'])
-            ->from(self::TABLENAME, self::TABLENAME)
-            ->where(self::TABLENAME . '.id_personnel = :identifier')
-            ->setParameter('identifier', $identifier)
-            ->executeQuery()
-            ->fetchAssociative()
-        ;
-
-        // return $qb->executeQuery()->fetchOne();
-    }
-
-    public function findUser(array $criteria): ?User
-    {
-        $qb = $this->getQueryBuilder()
-            ->from(self::TABLENAME, self::TABLENAME);
-        foreach ($criteria as $field => $value) {
-            $bind = ':' . $field;
-            $qb->andWhere(self::TABLENAME . '.' . $field . $bind)
-                ->setParameter($field, $value);
-        }
-
-        return $qb->executeQuery()->fetchOne();
-    }
-
-    public function setProperties(array $properties): void
-    {
-        foreach ($properties as $propertie => $value) {
-            $setter = 'set' . ucfirst($propertie);
-            if (method_exists($this, $setter)) {
-                $this->$setter($value);
-            }
-        }
+        return match ($roles) {
+            'user' => ['ROLE_USER'],
+            'admin' => ['ROLE_ADMIN'],
+            'default' => ['ROLE_ADMIN']
+        };
     }
 }
