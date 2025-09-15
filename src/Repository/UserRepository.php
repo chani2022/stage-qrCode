@@ -5,28 +5,29 @@ namespace App\Repository;
 use App\Models\User;
 use Doctrine\DBAL\Connection;
 
-class UserRepository
+class UserRepository extends AbstractRepository
 {
-    public const TABLENAME = 'personnel';
+    // public const TABLENAME = 'personnel';
 
-    private Connection $connection;
+    // private Connection $connection;
 
     public function __construct(Connection $connection)
     {
-        $this->connection = $connection;
+        parent::__construct($connection);
+        $this->tableName = 'personnel';
     }
 
     public function authenticatedUser(string $identifier, string $hashedPassword): bool
     {
         $qb = $this->connection->createQueryBuilder()
             ->select('id_personnel', 'nom', 'prenom', 'motsdepasse', 'nom_privilege', 'login')
-            ->from(self::TABLENAME, self::TABLENAME);
+            ->from($this->tableName, $this->tableName);
         if (is_numeric($identifier)) {
-            $qb->where(self::TABLENAME . '.id_personnel = :identifier');
+            $qb->where($this->tableName . '.id_personnel = :identifier');
         } else {
-            $qb->where(self::TABLENAME . '.login = :identifier');
+            $qb->where($this->tableName . '.login = :identifier');
         }
-        $dataUser = $qb->andWhere(self::TABLENAME . '.motsdepasse = :password')
+        $dataUser = $qb->andWhere($this->tableName . '.motsdepasse = :password')
             ->setParameter('identifier', $identifier)
             ->setParameter('password', $hashedPassword)
             ->executeQuery()
@@ -38,11 +39,11 @@ class UserRepository
     {
         $qb = $this->connection->createQueryBuilder()
             ->select('id_personnel', 'nom', 'prenom', 'motsdepasse', 'nom_privilege', 'login')
-            ->from(self::TABLENAME, self::TABLENAME);
+            ->from($this->tableName, $this->tableName);
         if (is_numeric($identifier)) {
-            $qb->where(self::TABLENAME . '.id_personnel = :identifier');
+            $qb->where($this->tableName . '.id_personnel = :identifier');
         } else {
-            $qb->where(self::TABLENAME . '.login = :identifier');
+            $qb->where($this->tableName . '.login = :identifier');
         }
         $dataUser = $qb->setParameter('identifier', $identifier)
             ->executeQuery()
