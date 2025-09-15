@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class QrCodeController extends AbstractController
 {
-    #[Route('/qr/code', name: 'app_qr_code')]
+    #[Route('/api/qr-code', name: 'app_qr_code', defaults: ['_format' => 'json'])]
     public function index(): JsonResponse
     {
         return $this->json([
