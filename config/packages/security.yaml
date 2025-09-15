@@ -22,6 +22,7 @@ security:
             provider: user_provider
             custom_authenticators:
                 - App\Security\JsonAuthenticator
+            entry_point: App\Security\ApiEntryPoint
             logout:
                 path: app_logout
 

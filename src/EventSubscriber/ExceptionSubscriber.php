@@ -3,7 +3,6 @@
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -23,7 +22,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof AccessDeniedException) {
             $data['status'] = RESPONSE::HTTP_FORBIDDEN;
-            $data['message'] = 'Seuls les admin peuvent acceder à cette ressource.';
+            $data['message'] = 'Unauthorized';
         }
 
         $event->setResponse(new JsonResponse([

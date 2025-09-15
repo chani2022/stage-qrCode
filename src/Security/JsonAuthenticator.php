@@ -20,7 +20,7 @@ class JsonAuthenticator extends JsonLoginAuthenticator
 
     public function supports(Request $request): ?bool
     {
-        return $request->isMethod('POST') && $request->getPathInfo() == '/api/login';
+        return ($request->isMethod('POST') && $request->getPathInfo() == '/api/login');
     }
 
     public function authenticate(Request $request): Passport
