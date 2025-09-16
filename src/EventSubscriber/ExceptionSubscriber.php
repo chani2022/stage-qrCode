@@ -21,19 +21,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        $data = [
-            'message' => null,
-            'status' => null
-        ];
-
         if ($exception instanceof AccessDeniedException) {
-            $data['status'] = RESPONSE::HTTP_FORBIDDEN;
-            $data['message'] = 'Unauthorized';
+            $event->setResponse(new JsonResponse([
+                'message' => 'Unauthorized'
+            ], Response::HTTP_FORBIDDEN));
         }
-
-        $event->setResponse(new JsonResponse([
-            'message' => $data['message']
-        ], $data['status']));
     }
 
     /**

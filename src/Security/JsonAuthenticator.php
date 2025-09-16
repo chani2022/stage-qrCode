@@ -35,7 +35,7 @@ class JsonAuthenticator extends JsonLoginAuthenticator
 
         return new SelfValidatingPassport(
             new UserBadge($matricule, function (string $identifier) {
-                return $this->userRepository->loadUserByIdentifier($identifier);
+                return $this->userRepository->findByIdentifier($identifier);
             })
         );
     }
