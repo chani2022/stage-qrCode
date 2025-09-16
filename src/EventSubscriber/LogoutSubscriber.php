@@ -18,22 +18,18 @@ class LogoutSubscriber implements EventSubscriberInterface
             $request->getRequestFormat() === 'json' ||
             $request->headers->get('Content-Type') === 'application/json'
         ) {
+            $status = 'failed';
+            $message = 'L\'Utilisateur est déjà deconnecté.';
 
-            if (!$user) {
-                $event->setResponse(
-                    new JsonResponse([
-                        'status' => 'failed',
-                        'message' => 'L\'Utilisateur est déjà deconnecté.'
-                    ], JsonResponse::HTTP_NOT_FOUND)
-                );
-            } else {
-
-                $event->setResponse(new JsonResponse([
-                    'status' => 'success',
-                    'message' => 'Déconnexion réussie',
-                    'timestamp' => time()
-                ], JsonResponse::HTTP_OK));
+            if ($user) {
+                $status = 'success';
+                $message = 'Déconnexion réussie.';
             }
+
+            $event->setResponse(new JsonResponse([
+                'status' => $status,
+                'message' => $message
+            ]));
         }
     }
 
