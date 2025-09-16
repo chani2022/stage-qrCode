@@ -16,8 +16,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
     private ?string $login = null;
 
-    public function __construct(int $id, string $nom, string $prenom, string $roles, string $login)
-    {
+    public function __construct(
+        int $id,
+        string $nom,
+        string $prenom,
+        string $roles,
+        string $login
+    ) {
         $this->id = $id;
         $this->identifier = $id;
         $this->nom = $nom;
@@ -81,7 +86,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPassword(?string $password): static
     {
-
         $this->password = $password;
 
         return $this;
