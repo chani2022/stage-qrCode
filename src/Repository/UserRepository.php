@@ -7,16 +7,19 @@ use Doctrine\DBAL\Connection;
 
 class UserRepository extends AbstractRepository
 {
-    // public const TABLENAME = 'personnel';
-
-    // private Connection $connection;
-
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
         $this->tableName = 'personnel';
     }
 
+    /**
+     * Vérifier si les données envoyé sont bien presents dans la table.
+     * 
+     * @param string $identifier
+     * @param string $hashedPassword
+     * @return bool
+     */
     public function authenticatedUser(string $identifier, string $hashedPassword): bool
     {
         $qb = $this->connection->createQueryBuilder()
@@ -34,8 +37,13 @@ class UserRepository extends AbstractRepository
             ->fetchAssociative();
         return $dataUser ? true : false;
     }
-
-    public function loadUserByIdentifier(string $identifier): User
+    /**
+     * Charger l'utilisateur via son identifiant
+     * 
+     * @param string $identifier
+     * @return User
+     */
+    public function findByIdentifier(string $identifier): User
     {
         $qb = $this->connection->createQueryBuilder()
             ->select('id_personnel', 'nom', 'prenom', 'motsdepasse', 'nom_privilege', 'login')

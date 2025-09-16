@@ -11,6 +11,12 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * Empecher les utilisateurs non connecté d'acceder a une ressource proteger.
+     * 
+     * @param ExceptionEvent $event
+     * @return void
+     */
     public function onExceptionEvent(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
@@ -30,6 +36,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
         ], $data['status']));
     }
 
+    /**
+     * Definir les évènements à abonner.
+     * 
+     * @return array<string, string|array{int, string|int}>
+     */
     public static function getSubscribedEvents(): array
     {
         return [

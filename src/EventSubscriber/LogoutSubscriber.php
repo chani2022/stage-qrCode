@@ -8,6 +8,12 @@ use Symfony\Component\Security\Http\Event\LogoutEvent;
 
 class LogoutSubscriber implements EventSubscriberInterface
 {
+    /**
+     * Personnaliser le message de retour lors de la deconnexion
+     * 
+     * @param LogoutEvent $event
+     * @return void
+     */
     public function onLogoutEvent(LogoutEvent $event): void
     {
         $request = $event->getRequest();
@@ -33,6 +39,11 @@ class LogoutSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Definir les évènements à abonner.
+     * 
+     * @return array<string, string|array{int, string|int}>
+     */
     public static function getSubscribedEvents(): array
     {
         return [
