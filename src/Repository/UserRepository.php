@@ -65,4 +65,16 @@ class UserRepository extends AbstractRepository
             $dataUser['login']
         );
     }
+
+    public function findAll(): array
+    {
+        return $this->connection->createQueryBuilder()
+            ->select('id_personnel', 'nom', 'prenom', 'nom_privilege', 'login')
+            ->from($this->tableName, $this->tableName)
+            ->where($this->tableName . '.actif = :actif')
+            ->setParameter('actif', 'Oui')
+            ->orderBy('id_personnel')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 }
