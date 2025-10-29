@@ -4,10 +4,11 @@ namespace App\Repository;
 
 use App\Models\User;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserRepository extends AbstractRepository
 {
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, private UserPasswordHasherInterface $userPasswordHasher)
     {
         parent::__construct($connection);
         $this->tableName = 'personnel';
@@ -69,7 +70,7 @@ class UserRepository extends AbstractRepository
     public function findAll(): array
     {
         return $this->connection->createQueryBuilder()
-            ->select('id_personnel', 'nom', 'prenom', 'nom_privilege', 'login')
+            ->select('id_personnel', 'nom', 'prenom', 'nom_privilege', 'login', 'cin', 'actif', 'motsdepasse', 'nom_fonction', 'photo', 'sexe')
             ->from($this->tableName, $this->tableName)
             ->where($this->tableName . '.actif = :actif')
             ->setParameter('actif', 'Oui')

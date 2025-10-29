@@ -20,7 +20,7 @@ abstract class AbstractRepository
     /**
      * Insertion une ligne dans la table concerné
      * 
-     * @param array<string, string|int>
+     * @param array<string, string|int> $data
      * @return int|string
      */
     public function create(array $data): int|string

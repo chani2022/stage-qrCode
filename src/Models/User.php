@@ -8,11 +8,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
-    private ?int $id;
-    private ?string $nom;
-    private ?string $prenom;
-    private array $roles = [];
-    private ?string $identifier;
+    private ?int $id = null;
+    private ?string $nom = null;
+    private ?string $prenom = null;
+    private ?array $roles = [];
+    private ?string $identifier = null;
     private ?string $password = null;
     private ?string $login = null;
 
