@@ -1,5 +1,24 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+# API Controllers
+app_security:
+    resource: ../src/Controller/SecurityController.php
     type: attribute
+    prefix: /api
+    name_prefix: api_security_
+
+app_mouvement_interne:
+    resource: ../src/Controller/MouvementInterneController.php
+    type: attribute
+    prefix: /api
+    name_prefix: api_mouvement_interne_
+
+app_mouvement_externe:
+    resource: ../src/Controller/MouvementExterneController.php
+    type: attribute
+    prefix: /api
+    name_prefix: api_mouvement_externe_
+
+app_vehicule:
+    resource: ../src/Controller/VehiculeController.php
+    type: attribute
+    prefix: /api
+    name_prefix: api_vehicule_

@@ -47,7 +47,7 @@ class UserRepository extends AbstractRepository
     public function findByIdentifier(string $identifier): User
     {
         $qb = $this->connection->createQueryBuilder()
-            ->select('id_personnel', 'nom', 'prenom', 'motsdepasse', 'nom_privilege', 'login')
+            ->select('id_personnel', 'nom', 'prenom', 'motsdepasse', 'nom_privilege', 'login', 'actif', 'nom_fonction', 'photo', 'sexe')
             ->from($this->tableName, $this->tableName);
         if (is_numeric($identifier)) {
             $qb->where($this->tableName . '.id_personnel = :identifier');
@@ -63,7 +63,50 @@ class UserRepository extends AbstractRepository
             $dataUser['nom'],
             $dataUser['prenom'],
             $dataUser['nom_privilege'],
-            $dataUser['login']
+            $dataUser['login'],
+            $dataUser['cin'] ?? null,
+            $dataUser['date_embauche'] ?? null,
+            $dataUser['telephone'] ?? null,
+            $dataUser['adresse'] ?? null,
+            $dataUser['nom_fonction'] ?? null,
+            $dataUser['photo'] ?? null,
+            $dataUser['sexe'] ?? null,
+            $dataUser['motsdepasse'],
+            $dataUser['actif']
+        );
+    }
+
+    public function find(int $id): ?User
+    {
+        $data = $this->connection->createQueryBuilder()
+            ->select('id_personnel', 'nom', 'prenom', 'nom_privilege', 'login', 'cin', 'actif', 'motsdepasse', 'nom_fonction', 'photo', 'sexe', 'date_embauche', 'telephone', 'adresse')
+            ->from($this->tableName, $this->tableName)
+            ->where($this->tableName . '.id_personnel = :id')
+            ->andWhere($this->tableName . '.actif = :actif')
+            ->setParameter('id', $id)
+            ->setParameter('actif', 'Oui')
+            ->executeQuery()
+            ->fetchAssociative();
+
+        if (!$data) {
+            return null;
+        }
+
+        return new User(
+            (int)$data['id_personnel'],
+            $data['nom'],
+            $data['prenom'],
+            $data['nom_privilege'],
+            $data['login'],
+            $data['cin'],
+            $data['date_embauche'],
+            $data['telephone'],
+            $data['adresse'],
+            $data['nom_fonction'],
+            $data['photo'],
+            $data['sexe'],
+            $data['motsdepasse'],
+            $data['actif']
         );
     }
 

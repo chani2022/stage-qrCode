@@ -29,8 +29,35 @@ class JsonAuthenticator extends JsonLoginAuthenticator
         $matricule = $data['identifiant'] ?? '';
         $plainPassword = $data['password'] ?? '';
 
-        if (!$this->userRepository->authenticatedUser($matricule, md5($plainPassword))) {
+        // Find user by identifier
+        $user = $this->userRepository->findByIdentifier($matricule);
+        
+        if (!$user) {
             throw new AuthenticationException('Invalid credentials');
+        }
+
+        // Verify password using MD5 hash (as configured in security.yaml)
+        if ($user->getMotsdepasse() !== md5($plainPassword)) {
+            throw new AuthenticationException('Invalid credentials');
+        }
+
+        // Check if user has allowed function
+        $allowedFunctions = [
+            'Responsable Personnel',
+            'Directeur de Plateau', 
+            'Directeur Général',
+            'Directeur',
+            'Securite'
+        ];
+        
+        $userFunction = $user->getNomFonction();
+        if (!in_array($userFunction, $allowedFunctions)) {
+            throw new AuthenticationException('Access denied: insufficient privileges');
+        }
+
+        // Check if user is active
+        if ($user->getActif() !== 'Oui') {
+            throw new AuthenticationException('Account is inactive');
         }
 
         return new SelfValidatingPassport(
@@ -46,21 +73,32 @@ class JsonAuthenticator extends JsonLoginAuthenticator
         $user = $token->getUser();
 
         return new JsonResponse([
-            'message' => 'Authentification success.',
             'user' => [
                 'id' => $user->getId(),
-                'login' => $user->getLogin(),
                 'nom' => $user->getNom(),
                 'prenom' => $user->getPrenom(),
-                'roles' => $user->getRoles()
+                'nom_fonction' => $user->getNomFonction(),
+                'photo' => $user->getPhoto(),
+                'sexe' => $user->getSexe(),
             ]
         ]);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $message = $exception->getMessage();
+        
+        // Map specific error messages to proper HTTP status codes
+        if (str_contains($message, 'insufficient privileges')) {
+            $statusCode = Response::HTTP_FORBIDDEN;
+        } elseif (str_contains($message, 'inactive')) {
+            $statusCode = Response::HTTP_FORBIDDEN;
+        } else {
+            $statusCode = Response::HTTP_UNAUTHORIZED;
+        }
+        
         return new JsonResponse([
-            'message' => 'Invalid credentials.',
-        ], Response::HTTP_UNAUTHORIZED);
+            'error' => $message,
+        ], $statusCode);
     }
 }
