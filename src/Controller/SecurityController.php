@@ -24,6 +24,28 @@ final class SecurityController extends AbstractController
         $this->userRepository = $userRepository;
     }
 
+    #[Route('/users', name: 'app_user')]
+    public function index(UserRepository $userRepository): JsonResponse
+    {
+        return $this->json([
+            'users' => $userRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/users/{id}', name: 'app_user_show', methods: ['GET'])]
+    public function show(int $id, UserRepository $userRepository): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        
+        if (!$user) {
+            return $this->json([
+                'error' => 'Utilisateur non trouvé',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return $this->json($user);
+    }
+
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
